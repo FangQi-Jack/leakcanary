@@ -14,11 +14,11 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<resources>
-  <string name="app_name">LeakCanary Sample</string>
-  <string name="start_async_task">Start new AsyncTask</string>
-  <string name="helper_text">Start the async task, <b>rotate the screen</b> and wait for a bit. A
-    wild notification appears.
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation">
+  <string name="app_name">Example App</string>
+  <string name="helper_text">Rotate the screen 5 times to create 5 leaks and trigger a foreground
+    heap dump. Or press back to cause a leak and trigger a background heap dump.
   </string>
-  <string name="leak_canary_display_activity_label">Leaks Sample</string>
 </resources>

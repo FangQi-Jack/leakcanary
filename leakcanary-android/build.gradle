@@ -1,44 +1,24 @@
-version rootProject.ext.VERSION_NAME
-group rootProject.ext.GROUP
-
-buildscript {
-  repositories {
-    mavenCentral()
-  }
-}
-
 apply plugin: 'com.android.library'
-
-repositories {
-  mavenCentral()
-}
+apply plugin: 'kotlin-android'
 
 dependencies {
-  compile project(':leakcanary-analyzer')
-}
+  api project(':leakcanary-android-core')
+  api project(':leakcanary-analyzer')
 
-def gitSha() {
-  return 'git rev-parse --short HEAD'.execute().text.trim()
+  implementation deps.kotlin.stdlib
 }
 
 android {
-  resourcePrefix 'leak_canary_'
-  compileSdkVersion rootProject.ext.compileSdkVersion
-  buildToolsVersion rootProject.ext.buildToolsVersion
+  compileSdkVersion versions.compileSdk
   defaultConfig {
-    minSdkVersion rootProject.ext.minSdkVersion
-    targetSdkVersion rootProject.ext.targetSdkVersion
-    buildConfigField "String", "LIBRARY_VERSION", "\"${rootProject.ext.VERSION_NAME}\""
-    buildConfigField "String", "GIT_SHA", "\"${gitSha()}\""
-    consumerProguardFiles 'consumer-proguard-rules.pro'
+    minSdkVersion versions.minSdk
   }
   lintOptions {
     disable 'GoogleAppIndexingWarning'
+    // junit references java.lang.management
+    ignore 'InvalidPackage'
+    check 'Interoperability'
   }
-}
-
-task sourceJar(type: Jar) {
-  from 'src/main/java'
 }
 
 apply from: rootProject.file('gradle/checkstyle.gradle')

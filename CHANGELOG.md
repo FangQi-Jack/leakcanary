@@ -1,6 +1,195 @@
 # Change Log
 
-All changes in 1.4+ are [tracked here](https://github.com/square/leakcanary/pulls?utf8=%E2%9C%93&q=milestone%3A1.4+is%3Apr).
+## Version 2.0 Alpha 1 (2019-04-23)
+
+**Thanks for testing the alpha**, we're counting on you to help us find bugs and suggest improvements!
+
+<img src="https://github.com/square/leakcanary/wiki/assets/logo-2.0-200px.png" />
+
+* New [logo](https://github.com/square/leakcanary/wiki/FAQ#who-made-the-logo), thanks [@flickator](https://github.com/flickator)!
+* Entirely rewritten to **100% Kotlin**
+* Multiple leaks detected in one analysis
+  * The heap is dumped when the app goes in the background, or when a minimum of 5 leaks is reached in the foreground.
+* Leak grouping
+  * Leaks that share similar causes are grouped in the UI.
+  * New screens to see the list of groups and each group.
+  * Improved leaktrace strings to highlight leak causes.
+  * Leaks can be shared to Stack Overflow
+* New library: **LeakSentry**.
+  * Detects when objects are leaking and triggers LeakCanary
+  * Can be used independently in production, for instance to report the number of leaking instances on an OutOfMemoryError crash.
+* New heap parser
+  * Uses **90% less memory and 6 times** faster than the prior heap parser.
+  * Runs in the same process as the app on a low priority thread.
+  * No more dependency on Perflib and TroveJ. New dependency on Okio.
+  * The old parser is still available as `leakcanary-android-perflib` but will be removed after alpha.
+* Labelers can add any string content to leak elements
+* 0 code setup, just add the one debug dependency.
+* Simpler configuration options
+* Updated from support library to Android X
+
+Many thanks to
+[@BraisGabin](https://github.com/BraisGabin),
+[@colinmarsch](https://github.com/colinmarsch),
+[@jrodbx](https://github.com/jrodbx),
+[@flickator](https://github.com/flickator),
+[@JakeWharton](https://github.com/JakeWharton),
+[@pyricau](https://github.com/pyricau),
+[@WhatsEmo](https://github.com/WhatsEmo)
+for the contributions!
+
+For more details, see the [2.0 Milestone](https://github.com/square/leakcanary/milestone/6) and the [full diff](https://github.com/square/leakcanary/compare/v1.6.3...master).
+
+## Version 1.6.3 (2019-01-10)
+
+* [#1163](https://github.com/square/leakcanary/issues/1163) Fixed leaks being incorrectly classified as "no leak" due to missed GC Roots.
+* [#1153](https://github.com/square/leakcanary/issues/1153) `LeakCanary.isInAnalyzerProcess` now correctly returns true in the analyzer process prior to any first leak (could be triggered by starting the leak result activity).
+* [#1158](https://github.com/square/leakcanary/issues/1158) Stopped enabling DisplayLeakActivity when not using DisplayLeakService.
+* [#1135](https://github.com/square/leakcanary/issues/1135) Fixed IndexOutOfBoundsException for leak traces of size 1.
+* [#1163](https://github.com/square/leakcanary/issues/1163) Keep "no leak" heap dumps.
+
+Many thanks to
+[@KMaragh](https://github.com/KMaragh),
+[@pyricau](https://github.com/pyricau),
+[@SebRut](https://github.com/SebRut)
+for the code contributions!
+
+For more details, see the [1.6.3 Milestone](https://github.com/square/leakcanary/milestone/5) and the [full diff](https://github.com/square/leakcanary/compare/v1.6.2...v1.6.3).
+
+
+## Version 1.6.2 (2018-10-16)
+
+* [#1067](https://github.com/square/leakcanary/issues/1067) Fixed TransactionTooLargeException crash (leak analysis would never complete).
+* [#1061](https://github.com/square/leakcanary/pull/1061) Detection of Fragment view leaks after Fragment#onDestroyView().
+* [#1076](https://github.com/square/leakcanary/pull/1076) Added the FOREGROUND_SERVICE permission for Android P.
+* [#1062](https://github.com/square/leakcanary/issues/1062) The LeakCanary toast now always shows correctly. It doesn't show if there is no activity in foreground.
+* [#1115](https://github.com/square/leakcanary/issues/1115) Reenabled the DisplayLeakActivity icon on fresh installs.
+* [#1100](https://github.com/square/leakcanary/pull/1100) Added nullability annotations to improve Kotlin support.
+* Updates to excluded leaks ([commits](https://github.com/square/leakcanary/commits/v1.6.2/leakcanary-android/src/main/java/com/squareup/leakcanary/AndroidExcludedRefs.java)).
+* Updates to reachability inspectors ([commits](https://github.com/square/leakcanary/commits/v1.6.2/leakcanary-android/src/main/java/com/squareup/leakcanary/AndroidReachabilityInspectors.java)).
+
+Many thanks to
+[@fractalwrench](https://github.com/fractalwrench),
+[@hzsweers](https://github.com/hzsweers),
+[@Goddchen](https://github.com/Goddchen),
+[@igokoro](https://github.com/igokoro),
+[@IlyaGulya](https://github.com/IlyaGulya),
+[@JakeWharton](https://github.com/JakeWharton),
+[@javmarina](https://github.com/javmarina),
+[@jokermonn](https://github.com/jokermonn),
+[@jrodbx](https://github.com/jrodbx),
+[@Parseus](https://github.com/Parseus),
+[@pyricau](https://github.com/pyricau),
+[@scottkennedy](https://github.com/scottkennedy)
+for the code contributions!
+
+### Public API changes
+
+* Subclasses of `AbstractAnalysisResultService` should now override `onHeapAnalyzed(@NonNull AnalyzedHeap analyzedHeap)` instead of `onHeapAnalyzed(@NonNull HeapDump heapDump, @NonNull AnalysisResult result)`
+
+For more details, see the [1.6.2 Milestone](https://github.com/square/leakcanary/milestone/4) and the [full diff](https://github.com/square/leakcanary/compare/v1.6.1...v1.6.2).
+
+## Version 1.6.1 (2018-06-21)
+
+* [#727](https://github.com/square/leakcanary/issues/727) Improved leak analysis: LeakCanary now identifies and highlights the potential causes of the leak.
+* [#1011](https://github.com/square/leakcanary/issues/1011) We noticed that computing the retained heap size could take a long time, so it's now optional and off by default.
+* [#633](https://github.com/square/leakcanary/pull/633) Support for detecting leaks in instrumentation tests ([see the wiki](https://github.com/square/leakcanary/wiki/Customizing-LeakCanary#running-leakcanary-in-instrumentation-tests)).
+* [#985](https://github.com/square/leakcanary/pull/985) Ability to convert leak traces into stack traces for easy remote reporting ([see the wiki](https://github.com/square/leakcanary/wiki/Customizing-LeakCanary#uploading-to-a-server)).
+* [#983](https://github.com/square/leakcanary/issues/983) Support for watching destroyed Fragments.
+* [#846](https://github.com/square/leakcanary/issues/846) LeakCanary now uses foreground services and displays a notification when the analysis is in progress. This also fixes crashes when analyzing in background on O+.
+* The LeakCanary icon (to start to DisplayLeakActivity) is now hidden by default, and only enabled after the first leak is found.
+* [#775](https://github.com/square/leakcanary/issues/775) Fixed crash when sharing heap dumps on O+ and added a dependency to the support-core-utils library.
+* [#930](https://github.com/square/leakcanary/pull/930) DisplayLeakActivity has a responsive icon.
+* [#685](https://github.com/square/leakcanary/issues/685) Stopped doing IO on main thread in DisplayLeakActivity (fixes StrictMode errors).
+* [#999](https://github.com/square/leakcanary/pull/999) Updated HAHA to 2.0.4, which uses Trove4j as an external dependency (from jcenter) instead of rebundling it. This is to clarify licences (Apache v2 vs LGPL 2.1).
+* Several bug and crash fixes.
+
+Many thanks to [@AdityaAnand1](https://github.com/AdityaAnand1), [@alhah](https://github.com/alhah), [@christxph](https://github.com/christxph), [@csoon03](https://github.com/csoon03), [@daqi](https://github.com/daqi), [@JakeWharton](https://github.com/JakeWharton), [@jankovd](https://github.com/jankovd), [@jrodbx](https://github.com/jrodbx), [@kurtisnelson](https://github.com/kurtisnelson), [@NightlyNexus](https://github.com/NightlyNexus), [@pyricau](https://github.com/pyricau), [@SalvatoreT](https://github.com/SalvatoreT), [@shmuelr](https://github.com/shmuelr), [@tokou](https://github.com/tokou), [@xueqiushi](https://github.com/xueqiushi)
+ for the code contributions!
+
+Note: we made a 1.6 release but quickly followed up with 1.6.1 due to [#1058](https://github.com/square/leakcanary/issues/1058).
+
+### Public API changes
+
+* The installed ref watcher singleton is now available via `LeakCanary.installedRefWatcher()`
+* `AnalysisResult.leakTraceAsFakeException()` returns an exception that can be used to report and group leak traces to a tool like Bugsnag or Crashlytics.
+* New `InstrumentationLeakDetector` and `FailTestOnLeakRunListener` APIs for detecting leaks in instrumentation tests.
+* New `Reachability.Inspector` and `RefWatcherBuilder.stethoscopeClasses()` API to establish reachability and help identify leak causes.
+* Watching activities can be disabled with `AndroidRefWatcherBuilder.watchActivities(false)`, watching fragments can be disabled with `AndroidRefWatcherBuilder.watchFragments(false)`
+* `LeakCanary.setDisplayLeakActivityDirectoryProvider()` is deprecated and replaced with `LeakCanary.setLeakDirectoryProvider()`
+* New `RefWatcherBuilder.computeRetainedHeapSize()` API to enable the computing of the retained heap size (off by default).
+
+For more details, see the [1.6.1 Milestone](https://github.com/square/leakcanary/milestone/3) and the [full diff](https://github.com/square/leakcanary/compare/v1.5.4...v1.6.1).
+
+## Version 1.5.4 *(2017-09-22)*
+
+* Restore Java 7 compatibility in leakcanary-watcher
+
+## Version 1.5.3 *(2017-09-17)*
+
+* Fix broken 1.5.2 [build](https://github.com/square/leakcanary/issues/815)
+* Convert leakcanary-watcher from Android library to Java library
+* Disable finish animations in RequestStoragePermissionActivity
+* Corrected README sample for Robolectric tests
+
+For more details, see the [full diff](https://github.com/square/leakcanary/compare/v1.5.2...v1.5.3).
+
+## Version 1.5.2 *(2017-08-09)*
+
+* New excluded leaks
+* Move Leakcanary UI into leak analyzer process
+* Ignore computing retained sizes for bitmaps on O+
+* Add notification channel for persistent messages on O+
+* Exclude permission activity from recents menu
+* Updated README and sample for handling Robolectric tests
+
+For more details, see the [full diff](https://github.com/square/leakcanary/compare/v1.5.1...v1.5.2).
+
+## Version 1.5.1 *(2017-04-25)*
+
+* New excluded leaks
+* Fix java.util.MissingFormatArgumentException in DisplayLeakService
+* Separate task affinities for different apps
+* Bump minSdk to 14
+* Fix HahaHelper for O Preview
+  
+For more details, see the [full diff](https://github.com/square/leakcanary/compare/v1.5...v1.5.1).
+
+## Version 1.5 *(2016-09-28)*
+
+* New excluded leaks
+* Added `LeakCanary.isInAnalyzerProcess()` to the no-op jar
+* Fixed several file access issues:
+  * No more cleanup on startup, we rotate the heap dump files on every new heap dump.
+  * LeakCanary now falls back to the app directory until it can write to the external storage.
+* Leak notifications now each use a distinct notification instead of erasing each other.
+* If LeakCanary can't perform a heap dump for any reason (e.g. analysis in progress, debugger attached), it retries later with an exponential backoff.
+* Added confirmation dialog when user deletes all leaks.
+* Replace the two LeakCanary configuration methods with a builder that provides more flexibility, see `LeakCanary.refWatcher()`.
+
+For more details, see the [full diff](https://github.com/square/leakcanary/compare/v1.4...v1.5).
+
+### Public API changes
+
+* New `HeapAnalyzer.findTrackedReferences()` method for headless analysis when you have no context on what leaked.
+* Added `LeakCanary.isInAnalyzerProcess()` to the no-op jar
+* Added `LeakCanary.refWatcher()` which returns an `AndroidRefWatcherBuilder` that extends `RefWatcherBuilder` and lets you fully customize the `RefWatcher` instance.
+* Removed `LeakCanary.install(Application, Class)` and `LeakCanary.androidWatcher(Context, HeapDump.Listener, ExcludedRefs)`.
+* Removed `R.integer.leak_canary_max_stored_leaks` and `R.integer.leak_canary_watch_delay_millis`, those can now be set via `LeakCanary.refWatcher()`.
+* Updated the `LeakDirectoryProvider` API to centralize all file related responsibilities.
+* `RefWatcher` is now constructed with a `WatchExecutor` which executes a `Retryable`, instead of an `Executor` that executes a `Runnable`.
+* `HeapDumper.NO_DUMP` was renamed `HeapDumper.RETRY_LATER`
+
+## Version 1.4 *(2016-09-11)*
+
+* Fix false negative where GC root is of type android.os.Binder [#482](https://github.com/square/leakcanary/issues/482)
+* Update HAHA to 2.0.3; clear compiler warnings [#563](https://github.com/square/leakcanary/issues/563) 
+* Correct some mistakes in German translation [#516](https://github.com/square/leakcanary/pull/516)
+* Don't loop when storage permission denied [#422](https://github.com/square/leakcanary/issues/422)
+* Remove old references to "__" prefixed resources [#477](https://github.com/square/leakcanary/pull/477)
+* Fix permission crash for DisplayLeakActivity on M [#382](https://github.com/square/leakcanary/issues/382)
+* Fix NPE when thread name not found in heap dump [#417](https://github.com/square/leakcanary/issues/417)
+* Add version info to stacktrace [#473](https://github.com/square/leakcanary/issues/473)
 
 ## Version 1.4-beta2 *(2016-03-23)*
 
